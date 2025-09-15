@@ -1,84 +1,326 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>JS Drum Kit</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="https://fav.farm/🔥" />
+  <meta charset="UTF-8">
+  <title>Drum Kit</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('./background.jpg') center center / cover no-repeat fixed;
+      color: white;
+    }
+
+    /* Header bar (dashboard style) */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: rgba(0, 0, 0, 0.7);
+      border-bottom: 2px solid gold;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    header h1 {
+      font-size: 22px;
+      color: gold;
+      margin: 0;
+    }
+
+    /* Dropdown */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown button {
+      background: linear-gradient(45deg, #b30000, #660000);
+      color: gold;
+      padding: 10px 18px;
+      border: 2px solid gold;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dropdown button:hover {
+      background: linear-gradient(45deg, #d40000, #880000);
+      box-shadow: 0 0 10px gold;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background: rgba(20, 20, 20, 0.95);
+      min-width: 280px;
+      border: 2px solid gold;
+      border-radius: 12px;
+      padding: 15px;
+      transform: scaleY(0);
+      transform-origin: top;
+      transition: transform 0.4s ease;
+    }
+
+    .dropdown.show .dropdown-content {
+      display: block;
+      transform: scaleY(1);
+    }
+
+    .dropdown-content label {
+      display: block;
+      margin: 6px 0;
+      font-size: 14px;
+      color: gold;
+    }
+
+    .dropdown-content input[type="file"] {
+      margin-left: 5px;
+      color: white;
+      background: #111;
+      border: 1px solid red;
+      border-radius: 6px;
+      padding: 3px;
+    }
+
+    .dropdown-content .control-btn {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 8px;
+      background: linear-gradient(45deg, #222, #333);
+      color: gold;
+      font-weight: bold;
+      border: 2px solid red;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dropdown-content .control-btn:hover {
+      background: linear-gradient(45deg, #b30000, #660000);
+      box-shadow: 0 0 10px gold;
+    }
+
+    /* Timer */
+    #recording-timer {
+      font-size: 16px;
+      color: red;
+      font-weight: bold;
+    }
+
+    /* Keys */
+    .keys {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 80px);
+      padding: 20px;
+    }
+
+    .key {
+      border: .4rem solid black;
+      border-radius: .5rem;
+      margin: 1rem;
+      font-size: 1.5rem;
+      padding: 1rem .5rem;
+      transition: all .07s ease;
+      width: 10rem;
+      text-align: center;
+      color: white;
+      background: rgba(0,0,0,0.4);
+      text-shadow: 0 0 .5rem black;
+    }
+
+    .playing {
+      transform: scale(1.1);
+      border-color: #ffc600;
+      box-shadow: 0 0 1rem #ffc600;
+    }
+
+    kbd {
+      display: block;
+      font-size: 4rem;
+    }
+
+    .sound {
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: .1rem;
+      color: #ffc600;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="keys">
-        <div data-key="65" class="key">
-            <kbd>A</kbd>
-            <span class="sound">clap</span>
-        </div>
-        <div data-key="83" class="key">
-            <kbd>S</kbd>
-            <span class="sound">hihat</span>
-        </div>
-        <div data-key="68" class="key">
-            <kbd>D</kbd>
-            <span class="sound">kick</span>
-        </div>
-        <div data-key="70" class="key">
-            <kbd>F</kbd>
-            <span class="sound">openhat</span>
-        </div>
-        <div data-key="71" class="key">
-            <kbd>G</kbd>
-            <span class="sound">boom</span>
-        </div>
-        <div data-key="72" class="key">
-            <kbd>H</kbd>
-            <span class="sound">ride</span>
-        </div>
-        <div data-key="74" class="key">
-            <kbd>J</kbd>
-            <span class="sound">snare</span>
-        </div>
-        <div data-key="75" class="key">
-            <kbd>K</kbd>
-            <span class="sound">tom</span>
-        </div>
-        <div data-key="76" class="key">
-            <kbd>L</kbd>
-            <span class="sound">tink</span>
-        </div>
+  <!-- Header -->
+  <header>
+    <h1>🥁 Drum Kit</h1>
+    <div id="recording-timer">⏱ 0s</div>
+    <div class="dropdown">
+      <button onclick="toggleDropdown()">🎛 Options</button>
+      <div class="dropdown-content">
+        <h3 style="color:red;">🎵 Upload Custom Sounds</h3>
+        <label>A <input type="file" class="upload-sound" data-key="65" accept="audio/*"></label>
+        <label>S <input type="file" class="upload-sound" data-key="83" accept="audio/*"></label>
+        <label>D <input type="file" class="upload-sound" data-key="68" accept="audio/*"></label>
+        <label>F <input type="file" class="upload-sound" data-key="70" accept="audio/*"></label>
+        <label>G <input type="file" class="upload-sound" data-key="71" accept="audio/*"></label>
+        <label>H <input type="file" class="upload-sound" data-key="72" accept="audio/*"></label>
+        <label>J <input type="file" class="upload-sound" data-key="74" accept="audio/*"></label>
+        <label>K <input type="file" class="upload-sound" data-key="75" accept="audio/*"></label>
+        <label>L <input type="file" class="upload-sound" data-key="76" accept="audio/*"></label>
+
+        <h3 style="color:red; margin-top:10px;">🎛 Controls</h3>
+        <button class="control-btn" onclick="startRecording()">▶ Start Recording</button>
+        <button class="control-btn" onclick="stopRecording()">⏹ Stop Recording</button>
+        <button class="control-btn" onclick="playRecording()">🎶 Play Recording</button>
+        <button class="control-btn" onclick="saveRecording()">💾 Download Recording</button>
+      </div>
     </div>
+  </header>
 
-    <audio data-key="65" src="sounds/clap.wav"></audio>
-    <audio data-key="83" src="sounds/hihat.wav"></audio>
-    <audio data-key="68" src="sounds/kick.wav"></audio>
-    <audio data-key="70" src="sounds/openhat.wav"></audio>
-    <audio data-key="71" src="sounds/boom.wav"></audio>
-    <audio data-key="72" src="sounds/ride.wav"></audio>
-    <audio data-key="74" src="sounds/snare.wav"></audio>
-    <audio data-key="75" src="sounds/tom.wav"></audio>
-    <audio data-key="76" src="sounds/tink.wav"></audio>
+  <!-- Keys -->
+  <div class="keys">
+    <div data-key="65" class="key"><kbd>A</kbd><span class="sound">clap</span></div>
+    <div data-key="83" class="key"><kbd>S</kbd><span class="sound">hihat</span></div>
+    <div data-key="68" class="key"><kbd>D</kbd><span class="sound">kick</span></div>
+    <div data-key="70" class="key"><kbd>F</kbd><span class="sound">openhat</span></div>
+    <div data-key="71" class="key"><kbd>G</kbd><span class="sound">boom</span></div>
+    <div data-key="72" class="key"><kbd>H</kbd><span class="sound">ride</span></div>
+    <div data-key="74" class="key"><kbd>J</kbd><span class="sound">snare</span></div>
+    <div data-key="75" class="key"><kbd>K</kbd><span class="sound">tom</span></div>
+    <div data-key="76" class="key"><kbd>L</kbd><span class="sound">tink</span></div>
+  </div>
 
+  <!-- Audio -->
+  <audio data-key="65" src="sounds/clap.wav"></audio>
+  <audio data-key="83" src="sounds/hihat.wav"></audio>
+  <audio data-key="68" src="sounds/kick.wav"></audio>
+  <audio data-key="70" src="sounds/openhat.wav"></audio>
+  <audio data-key="71" src="sounds/boom.wav"></audio>
+  <audio data-key="72" src="sounds/ride.wav"></audio>
+  <audio data-key="74" src="sounds/snare.wav"></audio>
+  <audio data-key="75" src="sounds/tom.wav"></audio>
+  <audio data-key="76" src="sounds/tink.wav"></audio>
 
+  <script>
+    let recording = [];
+    let isRecording = false;
+    let timerInterval;
+    let seconds = 0;
 
-    <script>
-        window.addEventListener('keydown', function(e) {
-  const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
-  const key = document.querySelector(`div[data-key="${e.keyCode}"]`);
+    function toggleDropdown() {
+      document.querySelector(".dropdown").classList.toggle("show");
+    }
 
-  if (!audio) return; // Stop the function from running if no audio element is found
+    function playSound(e) {
+      const keyCode = e.keyCode || e.target.getAttribute("data-key");
+      const audio = document.querySelector(`audio[data-key="${keyCode}"]`);
+      const key = document.querySelector(`div[data-key="${keyCode}"]`);
 
-  audio.currentTime = 0; // Rewind to the start
-  audio.play();
+      if (!audio) return;
 
-  key.classList.add('playing');
-});
+      audio.currentTime = 0;
+      audio.play();
+      key.classList.add("playing");
 
-function removeTransition(e) {
-  if (e.propertyName !== 'transform') return; // Skip if it's not a transform
-  this.classList.remove('playing');
-}
+      if (isRecording) {
+        recording.push({ keyCode, time: Date.now() });
+      }
+    }
 
-const keys = document.querySelectorAll('.key');
-keys.forEach(key => key.addEventListener('transitionend', removeTransition));
-</script>
+    function startRecording() {
+      recording = [];
+      isRecording = true;
+      seconds = 0;
+      document.getElementById("recording-timer").textContent = "⏱ 0s";
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        seconds++;
+        document.getElementById("recording-timer").textContent = `⏱ ${seconds}s`;
+      }, 1000);
+
+      console.log("Recording started...");
+    }
+
+    function stopRecording() {
+      isRecording = false;
+      clearInterval(timerInterval);
+      console.log("Recording stopped.");
+    }
+
+    function playRecording() {
+      if (recording.length === 0) return;
+      let startTime = recording[0].time;
+      recording.forEach(note => {
+        setTimeout(() => {
+          const audio = document.querySelector(`audio[data-key="${note.keyCode}"]`);
+          if (audio) {
+            audio.currentTime = 0;
+            audio.play();
+          }
+        }, note.time - startTime);
+      });
+    }
+
+    function saveRecording() {
+      if (recording.length === 0) {
+        alert("No recording to save!");
+        return;
+      }
+      const startTime = recording[0].time;
+      const relativeRecording = recording.map(note => ({
+        keyCode: note.keyCode,
+        time: note.time - startTime
+      }));
+
+      const blob = new Blob([JSON.stringify(relativeRecording, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "drum-recording.json";
+      a.click();
+
+      URL.revokeObjectURL(url);
+    }
+
+    // Keydown
+    window.addEventListener("keydown", playSound);
+
+    // Click
+    const keys = document.querySelectorAll(".key");
+    keys.forEach(key => {
+      key.addEventListener("click", playSound);
+      key.addEventListener("transitionend", function(e) {
+        if (e.propertyName !== "transform") return;
+        this.classList.remove("playing");
+      });
+    });
+
+    // Upload custom sounds
+    const uploaders = document.querySelectorAll(".upload-sound");
+    uploaders.forEach(uploader => {
+      uploader.addEventListener("change", function(e) {
+        const file = e.target.files[0];
+        const keyCode = this.getAttribute("data-key");
+        if (file) {
+          const url = URL.createObjectURL(file);
+          const audio = document.querySelector(`audio[data-key="${keyCode}"]`);
+          if (audio) audio.src = url;
+        }
+      });
+    });
+  </script>
 </body>
 </html>

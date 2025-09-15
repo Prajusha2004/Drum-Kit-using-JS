@@ -1,51 +1,110 @@
 html {
   font-size: 10px;
-  background: url('./background.jpg') bottom center;
+  background: url('./background.jpg') no-repeat center center fixed;
   background-size: cover;
 }
 
-body,html {
+body, html {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: 'Poppins', sans-serif;
+  height: 100%;
+  color: #fff;
+  overflow-x: hidden;
 }
 
+/* Flex container for keys */
 .keys {
   display: flex;
-  flex: 1;
+  flex-wrap: wrap;
+  gap: 1.5rem;
   min-height: 100vh;
   align-items: center;
   justify-content: center;
+  padding: 2rem;
 }
 
+/* Drum key styling */
 .key {
-  border: .4rem solid black;
-  border-radius: .5rem;
+  position: relative;
+  border: 0.3rem solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
   margin: 1rem;
-  font-size: 1.5rem;
-  padding: 1rem .5rem;
-  transition: all .07s ease;
+  font-size: 1.6rem;
+  padding: 1.5rem 1rem;
   width: 10rem;
   text-align: center;
+  background: rgba(0, 0, 0, 0.6);
   color: white;
-  background: rgba(0,0,0,0.4);
-  text-shadow: 0 0 .5rem black;
+  cursor: pointer;
+
+  /* Subtle animations */
+  transition: transform 0.07s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.7);
 }
 
-.playing {
-  transform: scale(1.1);
+/* Playing animation */
+.key.playing {
+  transform: scale(1.15);
   border-color: #ffc600;
-  box-shadow: 0 0 1rem #ffc600;
+  box-shadow: 0 0 2rem #ffc600, 0 0 3rem rgba(255, 198, 0, 0.6);
+  background: rgba(255, 198, 0, 0.1);
 }
 
+/* Ripple effect */
+.key::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 198, 0, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.key.playing::after {
+  width: 200%;
+  height: 200%;
+  opacity: 0;
+  transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
+}
+
+/* Key label (A, S, D...) */
 kbd {
   display: block;
   font-size: 4rem;
+  font-weight: bold;
+  letter-spacing: 0.1rem;
 }
 
+/* Sound name */
 .sound {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   text-transform: uppercase;
-  letter-spacing: .1rem;
+  letter-spacing: 0.15rem;
+  margin-top: 0.5rem;
   color: #ffc600;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .keys {
+    gap: 1rem;
+  }
+
+  .key {
+    width: 7rem;
+    padding: 1rem 0.5rem;
+  }
+
+  kbd {
+    font-size: 2.5rem;
+  }
+
+  .sound {
+    font-size: 1rem;
+  }
 }
