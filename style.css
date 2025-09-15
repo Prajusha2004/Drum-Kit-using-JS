@@ -11,20 +11,69 @@ body, html {
   height: 100%;
   color: #fff;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
-/* Flex container for keys */
+/* ---------- HEADER ---------- */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* spreads items */
+  width: 100%;
+  padding: 1rem 2rem;
+  box-sizing: border-box;
+}
+
+header .logo {
+  width: 140px;
+  max-width: 30vw;
+  filter: drop-shadow(0 0 8px rgba(255, 198, 0, 0.7));
+  transition: transform 0.3s ease;
+}
+
+header .logo:hover {
+  transform: scale(1.08) rotate(-2deg);
+}
+
+header h1 {
+  font-size: 2.4rem;
+  font-weight: bold;
+  color: #ffc600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* space between emoji & text */
+}
+
+header .options-btn {
+  background: #8b0000;
+  color: #ffc600;
+  border: 2px solid #ffc600;
+  padding: 0.7rem 1.4rem;
+  border-radius: 8px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+header .options-btn:hover {
+  background: #ffc600;
+  color: #8b0000;
+}
+
+/* ---------- DRUM KEYS ---------- */
 .keys {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
-  min-height: 100vh;
+  flex-grow: 1;
   align-items: center;
   justify-content: center;
   padding: 2rem;
 }
 
-/* Drum key styling */
 .key {
   position: relative;
   border: 0.3rem solid rgba(255, 255, 255, 0.2);
@@ -37,13 +86,10 @@ body, html {
   background: rgba(0, 0, 0, 0.6);
   color: white;
   cursor: pointer;
-
-  /* Subtle animations */
   transition: transform 0.07s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.7);
 }
 
-/* Playing animation */
 .key.playing {
   transform: scale(1.15);
   border-color: #ffc600;
@@ -89,10 +135,25 @@ kbd {
   color: #ffc600;
 }
 
-/* Mobile responsiveness */
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  header .logo {
+    width: 100px;
+  }
+
+  header h1 {
+    font-size: 2rem;
+  }
+
   .keys {
     gap: 1rem;
+    padding: 1rem;
   }
 
   .key {
