@@ -57,144 +57,28 @@
     <audio data-key="75" src="sounds/tom.wav"></audio>
     <audio data-key="76" src="sounds/tink.wav"></audio>
 
-    <div class="controls">
-        <button id="record-btn">Record New Sound</button>
-        <button id="stop-btn" disabled>Stop Recording</button>
-    </div>
 
-    <div class="sound-assignment-container">
-        <h3>Assign & Share Sounds</h3>
-        <select id="saved-sounds-dropdown">
-            <option value="">Select a saved sound...</option>
-        </select>
-        <select id="key-dropdown">
-            <option value="">Select a key...</option>
-            <option value="65">A</option>
-            <option value="83">S</option>
-            <option value="68">D</option>
-            <option value="70">F</option>
-            <option value="71">G</option>
-            <option value="72">H</option>
-            <option value="74">J</option>
-            <option value="75">K</option>
-            <option value="76">L</option>
-        </select>
-        <button id="assign-btn">Assign to Key</button>
-        <button id="download-btn" disabled>Download Sound</button>
-    </div>
 
     <script>
-        function removeTransition(e) {
-            if (e.propertyName !== 'transform') return;
-            e.target.classList.remove('playing');
-        }
+        window.addEventListener('keydown', function(e) {
+  const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
+  const key = document.querySelector(`div[data-key="${e.keyCode}"]`);
 
-        function playSound(e) {
-            const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
-            const key = document.querySelector(`div[data-key="${e.keyCode}"]`);
-            if (!audio) return;
+  if (!audio) return; // Stop the function from running if no audio element is found
 
-            key.classList.add('playing');
-            audio.currentTime = 0;
-            audio.play();
-        }
+  audio.currentTime = 0; // Rewind to the start
+  audio.play();
 
-        const keys = Array.from(document.querySelectorAll('.key'));
-        keys.forEach(key => key.addEventListener('transitionend', removeTransition));
-        window.addEventListener('keydown', playSound);
+  key.classList.add('playing');
+});
 
-        const recordBtn = document.getElementById('record-btn');
-        const stopBtn = document.getElementById('stop-btn');
-        const assignBtn = document.getElementById('assign-btn');
-        const downloadBtn = document.getElementById('download-btn');
-        const savedSoundsDropdown = document.getElementById('saved-sounds-dropdown');
-        const keyDropdown = document.getElementById('key-dropdown');
+function removeTransition(e) {
+  if (e.propertyName !== 'transform') return; // Skip if it's not a transform
+  this.classList.remove('playing');
+}
 
-        let mediaRecorder;
-        let audioChunks = [];
-        let savedSounds = {};
-
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(stream => {
-                mediaRecorder = new MediaRecorder(stream);
-                mediaRecorder.addEventListener("dataavailable", event => {
-                    audioChunks.push(event.data);
-                });
-                mediaRecorder.addEventListener("stop", () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    const audioURL = URL.createObjectURL(audioBlob);
-
-                    const soundName = `sound-${Date.now()}`;
-                    savedSounds[soundName] = audioURL;
-
-                    const option = document.createElement('option');
-                    option.value = soundName;
-                    option.textContent = soundName;
-                    savedSoundsDropdown.appendChild(option);
-
-                    audioChunks = [];
-                });
-            })
-            .catch(err => {
-                console.error('Microphone access denied:', err);
-                alert('Microphone access is required to record sounds.');
-                recordBtn.disabled = true;
-            });
-
-        recordBtn.addEventListener('click', () => {
-            recordBtn.disabled = true;
-            stopBtn.disabled = false;
-            audioChunks = [];
-            mediaRecorder.start();
-        });
-
-        stopBtn.addEventListener('click', () => {
-            recordBtn.disabled = false;
-            stopBtn.disabled = true;
-            mediaRecorder.stop();
-        });
-
-        assignBtn.addEventListener('click', () => {
-            const selectedSoundName = savedSoundsDropdown.value;
-            const selectedKey = keyDropdown.value;
-
-            if (!selectedSoundName || !selectedKey) {
-                alert('Please select both a sound and a key.');
-                return;
-            }
-
-            const soundURL = savedSounds[selectedSoundName];
-            const keyElement = document.querySelector(`audio[data-key="${selectedKey}"]`);
-
-            if (keyElement) {
-                keyElement.src = soundURL;
-                alert(`Sound "${selectedSoundName}" assigned to key "${String.fromCharCode(selectedKey)}".`);
-            } else {
-                alert('Could not find the key element.');
-            }
-        });
-
-        savedSoundsDropdown.addEventListener('change', () => {
-            if (savedSoundsDropdown.value) {
-                downloadBtn.disabled = false;
-            } else {
-                downloadBtn.disabled = true;
-            }
-        });
-
-        downloadBtn.addEventListener('click', () => {
-            const selectedSoundName = savedSoundsDropdown.value;
-            if (!selectedSoundName) return;
-
-            const audioURL = savedSounds[selectedSoundName];
-            const link = document.createElement('a');
-            link.href = audioURL;
-            link.download = `${selectedSoundName}.wav`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
-    </script>
-
+const keys = document.querySelectorAll('.key');
+keys.forEach(key => key.addEventListener('transitionend', removeTransition));
+</script>
 </body>
 </html>
