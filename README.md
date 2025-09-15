@@ -1,7 +1,3 @@
-Here’s a clean description you can use for your **Drum Kit** GitHub repository:
-
----
-
 # 🥁 Drum Kit
 
 An interactive drum kit built with **HTML, CSS, and JavaScript**.
