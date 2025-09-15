@@ -14,7 +14,7 @@ This project lets users play drum sounds by either **clicking on the drum button
 
 ### 🚀 Live Demo
 
-[Try it out here](#) (add your live GitHub Pages/Netlify/Vercel link)
+https://drumkit-alpha.vercel.app/(#)
 
 ### 🛠️ Tech Stack
 
